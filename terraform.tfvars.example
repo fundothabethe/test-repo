@@ -1,0 +1,36 @@
+# Example terraform.tfvars file
+# Copy this to terraform.tfvars and customize the values
+
+# REQUIRED: Your EC2 Key Pair name (must exist in your AWS account)
+key_pair_name = "your-key-pair-name"
+
+# Environment name for resource naming
+environment = "ultra-expensive-demo"
+
+# AWS region to deploy resources
+aws_region = "us-east-1"
+
+# Control which expensive resources to create (set to false to reduce costs)
+enable_gpu_instances        = true   # WARNING: $32.77/hour each!
+enable_high_memory_instances = true  # WARNING: $26.69/hour each!
+enable_database_clusters    = true   # WARNING: Very expensive!
+enable_elasticsearch       = true    # WARNING: Expensive!
+
+# Storage configurations (WARNING: Large values = high costs!)
+ebs_volume_size = 5000    # 5TB per volume
+ebs_volume_iops = 20000   # Maximum IOPS for ultra-high cost
+rds_storage_size = 10000  # 10TB per RDS instance
+
+# Database credentials
+db_username = "admin"
+db_password = "YourSecurePassword123!"
+
+# Additional tags
+common_tags = {
+  Project     = "cost-demonstration"
+  Owner       = "your-name"
+  Department  = "engineering"
+  CostCenter  = "ULTRA-HIGH-COST"
+  Purpose     = "demonstration-only"
+  DeleteBy    = "2026-02-16"  # IMPORTANT: Set a deletion date!
+}
