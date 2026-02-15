@@ -1,278 +1,278 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "Expensive CloudFormation stack with high-cost EC2 instances and EBS volumes - WARNING: This will incur significant charges!"
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: 'Expensive CloudFormation stack with high-cost EC2 instances and EBS volumes - WARNING: This will incur significant charges!'
 
-Parameters:
-  KeyPairName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Name of an existing EC2 KeyPair to enable SSH access
-    Default: my-key-pair
+# Parameters:
+#   KeyPairName:
+#     Type: AWS::EC2::KeyPair::KeyName
+#     Description: Name of an existing EC2 KeyPair to enable SSH access
+#     Default: my-key-pair
 
-Resources:
-  # VPC and Networking
-  ExpensiveVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
-      Tags:
-        - Key: Name
-          Value: ExpensiveVPC
+# Resources:
+#   # VPC and Networking
+#   ExpensiveVPC:
+#     Type: AWS::EC2::VPC
+#     Properties:
+#       CidrBlock: 10.0.0.0/16
+#       EnableDnsHostnames: true
+#       EnableDnsSupport: true
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveVPC
 
-  PublicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref ExpensiveVPC
-      CidrBlock: 10.0.1.0/24
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: PublicSubnet
+#   PublicSubnet:
+#     Type: AWS::EC2::Subnet
+#     Properties:
+#       VpcId: !Ref ExpensiveVPC
+#       CidrBlock: 10.0.1.0/24
+#       AvailabilityZone: !Select [0, !GetAZs '']
+#       MapPublicIpOnLaunch: true
+#       Tags:
+#         - Key: Name
+#           Value: PublicSubnet
 
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: ExpensiveIGW
+#   InternetGateway:
+#     Type: AWS::EC2::InternetGateway
+#     Properties:
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveIGW
 
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref ExpensiveVPC
-      InternetGatewayId: !Ref InternetGateway
+#   AttachGateway:
+#     Type: AWS::EC2::VPCGatewayAttachment
+#     Properties:
+#       VpcId: !Ref ExpensiveVPC
+#       InternetGatewayId: !Ref InternetGateway
 
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref ExpensiveVPC
-      Tags:
-        - Key: Name
-          Value: PublicRouteTable
+#   PublicRouteTable:
+#     Type: AWS::EC2::RouteTable
+#     Properties:
+#       VpcId: !Ref ExpensiveVPC
+#       Tags:
+#         - Key: Name
+#           Value: PublicRouteTable
 
-  PublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: AttachGateway
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
+#   PublicRoute:
+#     Type: AWS::EC2::Route
+#     DependsOn: AttachGateway
+#     Properties:
+#       RouteTableId: !Ref PublicRouteTable
+#       DestinationCidrBlock: 0.0.0.0/0
+#       GatewayId: !Ref InternetGateway
 
-  SubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet
-      RouteTableId: !Ref PublicRouteTable
+#   SubnetRouteTableAssociation:
+#     Type: AWS::EC2::SubnetRouteTableAssociation
+#     Properties:
+#       SubnetId: !Ref PublicSubnet
+#       RouteTableId: !Ref PublicRouteTable
 
-  # Security Group
-  ExpensiveSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for expensive instances
-      VpcId: !Ref ExpensiveVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
+#   # Security Group
+#   ExpensiveSecurityGroup:
+#     Type: AWS::EC2::SecurityGroup
+#     Properties:
+#       GroupDescription: Security group for expensive instances
+#       VpcId: !Ref ExpensiveVPC
+#       SecurityGroupIngress:
+#         - IpProtocol: tcp
+#           FromPort: 22
+#           ToPort: 22
+#           CidrIp: 0.0.0.0/0
+#         - IpProtocol: tcp
+#           FromPort: 80
+#           ToPort: 80
+#           CidrIp: 0.0.0.0/0
+#         - IpProtocol: tcp
+#           FromPort: 443
+#           ToPort: 443
+#           CidrIp: 0.0.0.0/0
 
-  # Expensive EBS Volumes (Provisioned IOPS SSD)
-  ExpensiveEBSVolume1:
-    Type: AWS::EC2::Volume
-    Properties:
-      Size: 1000 # 1TB volume
-      VolumeType: io2 # Most expensive EBS type
-      Iops: 10000 # High IOPS for maximum cost
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      Encrypted: true
-      Tags:
-        - Key: Name
-          Value: ExpensiveEBSVolume1
+#   # Expensive EBS Volumes (Provisioned IOPS SSD)
+#   ExpensiveEBSVolume1:
+#     Type: AWS::EC2::Volume
+#     Properties:
+#       Size: 1000  # 1TB volume
+#       VolumeType: io2  # Most expensive EBS type
+#       Iops: 10000  # High IOPS for maximum cost
+#       AvailabilityZone: !Select [0, !GetAZs '']
+#       Encrypted: true
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveEBSVolume1
 
-  ExpensiveEBSVolume2:
-    Type: AWS::EC2::Volume
-    Properties:
-      Size: 2000 # 2TB volume
-      VolumeType: io2
-      Iops: 15000
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      Encrypted: true
-      Tags:
-        - Key: Name
-          Value: ExpensiveEBSVolume2
+#   ExpensiveEBSVolume2:
+#     Type: AWS::EC2::Volume
+#     Properties:
+#       Size: 2000  # 2TB volume
+#       VolumeType: io2
+#       Iops: 15000
+#       AvailabilityZone: !Select [0, !GetAZs '']
+#       Encrypted: true
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveEBSVolume2
 
-  # Very Expensive EC2 Instance 1 - x1e.xlarge (High Memory)
-  ExpensiveInstance1:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-0c02fb55956c7d316 # Amazon Linux 2 AMI (update for your region)
-      InstanceType: x1e.xlarge # $3.336/hour in us-east-1
-      KeyName: !Ref KeyPairName
-      SubnetId: !Ref PublicSubnet
-      SecurityGroupIds:
-        - !Ref ExpensiveSecurityGroup
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: 500 # Large root volume
-            VolumeType: io2
-            Iops: 5000
-            DeleteOnTermination: false
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          yum update -y
-          yum install -y httpd
-          systemctl start httpd
-          systemctl enable httpd
-          echo "<h1>Expensive Instance 1</h1>" > /var/www/html/index.html
-      Tags:
-        - Key: Name
-          Value: ExpensiveInstance1
+#   # Very Expensive EC2 Instance 1 - x1e.xlarge (High Memory)
+#   ExpensiveInstance1:
+#     Type: AWS::EC2::Instance
+#     Properties:
+#       ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 AMI (update for your region)
+#       InstanceType: x1e.xlarge  # $3.336/hour in us-east-1
+#       KeyName: !Ref KeyPairName
+#       SubnetId: !Ref PublicSubnet
+#       SecurityGroupIds:
+#         - !Ref ExpensiveSecurityGroup
+#       BlockDeviceMappings:
+#         - DeviceName: /dev/xvda
+#           Ebs:
+#             VolumeSize: 500  # Large root volume
+#             VolumeType: io2
+#             Iops: 5000
+#             DeleteOnTermination: false
+#       UserData:
+#         Fn::Base64: !Sub |
+#           #!/bin/bash
+#           yum update -y
+#           yum install -y httpd
+#           systemctl start httpd
+#           systemctl enable httpd
+#           echo "<h1>Expensive Instance 1</h1>" > /var/www/html/index.html
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveInstance1
 
-  # Very Expensive EC2 Instance 2 - c5n.4xlarge (Compute Optimized with Enhanced Networking)
-  ExpensiveInstance2:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-0c02fb55956c7d316 # Amazon Linux 2 AMI (update for your region)
-      InstanceType: c5n.4xlarge # $0.864/hour in us-east-1
-      KeyName: !Ref KeyPairName
-      SubnetId: !Ref PublicSubnet
-      SecurityGroupIds:
-        - !Ref ExpensiveSecurityGroup
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: 1000 # Very large root volume
-            VolumeType: io2
-            Iops: 8000
-            DeleteOnTermination: false
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          yum update -y
-          yum install -y httpd
-          systemctl start httpd
-          systemctl enable httpd
-          echo "<h1>Expensive Instance 2</h1>" > /var/www/html/index.html
-      Tags:
-        - Key: Name
-          Value: ExpensiveInstance2
+#   # Very Expensive EC2 Instance 2 - c5n.4xlarge (Compute Optimized with Enhanced Networking)
+#   ExpensiveInstance2:
+#     Type: AWS::EC2::Instance
+#     Properties:
+#       ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 AMI (update for your region)
+#       InstanceType: c5n.4xlarge  # $0.864/hour in us-east-1
+#       KeyName: !Ref KeyPairName
+#       SubnetId: !Ref PublicSubnet
+#       SecurityGroupIds:
+#         - !Ref ExpensiveSecurityGroup
+#       BlockDeviceMappings:
+#         - DeviceName: /dev/xvda
+#           Ebs:
+#             VolumeSize: 1000  # Very large root volume
+#             VolumeType: io2
+#             Iops: 8000
+#             DeleteOnTermination: false
+#       UserData:
+#         Fn::Base64: !Sub |
+#           #!/bin/bash
+#           yum update -y
+#           yum install -y httpd
+#           systemctl start httpd
+#           systemctl enable httpd
+#           echo "<h1>Expensive Instance 2</h1>" > /var/www/html/index.html
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveInstance2
 
-  # Ultra Expensive EC2 Instance 3 - r5.8xlarge (Memory Optimized)
-  ExpensiveInstance3:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-0c02fb55956c7d316 # Amazon Linux 2 AMI (update for your region)
-      InstanceType: r5.8xlarge # $2.016/hour in us-east-1
-      KeyName: !Ref KeyPairName
-      SubnetId: !Ref PublicSubnet
-      SecurityGroupIds:
-        - !Ref ExpensiveSecurityGroup
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: 2000 # Massive root volume
-            VolumeType: io2
-            Iops: 12000
-            DeleteOnTermination: false
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          yum update -y
-          yum install -y httpd
-          systemctl start httpd
-          systemctl enable httpd
-          echo "<h1>Expensive Instance 3 - Ultra Expensive</h1>" > /var/www/html/index.html
-      Tags:
-        - Key: Name
-          Value: ExpensiveInstance3
+#   # Ultra Expensive EC2 Instance 3 - r5.8xlarge (Memory Optimized)
+#   ExpensiveInstance3:
+#     Type: AWS::EC2::Instance
+#     Properties:
+#       ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 AMI (update for your region)
+#       InstanceType: r5.8xlarge  # $2.016/hour in us-east-1
+#       KeyName: !Ref KeyPairName
+#       SubnetId: !Ref PublicSubnet
+#       SecurityGroupIds:
+#         - !Ref ExpensiveSecurityGroup
+#       BlockDeviceMappings:
+#         - DeviceName: /dev/xvda
+#           Ebs:
+#             VolumeSize: 2000  # Massive root volume
+#             VolumeType: io2
+#             Iops: 12000
+#             DeleteOnTermination: false
+#       UserData:
+#         Fn::Base64: !Sub |
+#           #!/bin/bash
+#           yum update -y
+#           yum install -y httpd
+#           systemctl start httpd
+#           systemctl enable httpd
+#           echo "<h1>Expensive Instance 3 - Ultra Expensive</h1>" > /var/www/html/index.html
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveInstance3
 
-  # Attach additional EBS volumes to instances
-  VolumeAttachment1:
-    Type: AWS::EC2::VolumeAttachment
-    Properties:
-      InstanceId: !Ref ExpensiveInstance1
-      VolumeId: !Ref ExpensiveEBSVolume1
-      Device: /dev/sdf
+#   # Attach additional EBS volumes to instances
+#   VolumeAttachment1:
+#     Type: AWS::EC2::VolumeAttachment
+#     Properties:
+#       InstanceId: !Ref ExpensiveInstance1
+#       VolumeId: !Ref ExpensiveEBSVolume1
+#       Device: /dev/sdf
 
-  VolumeAttachment2:
-    Type: AWS::EC2::VolumeAttachment
-    Properties:
-      InstanceId: !Ref ExpensiveInstance2
-      VolumeId: !Ref ExpensiveEBSVolume2
-      Device: /dev/sdg
+#   VolumeAttachment2:
+#     Type: AWS::EC2::VolumeAttachment
+#     Properties:
+#       InstanceId: !Ref ExpensiveInstance2
+#       VolumeId: !Ref ExpensiveEBSVolume2
+#       Device: /dev/sdg
 
-  # Elastic Load Balancer (Application Load Balancer)
-  ExpensiveALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: ExpensiveALB
-      Type: application
-      Scheme: internet-facing
-      SecurityGroups:
-        - !Ref ExpensiveSecurityGroup
-      Subnets:
-        - !Ref PublicSubnet
+#   # Elastic Load Balancer (Application Load Balancer)
+#   ExpensiveALB:
+#     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+#     Properties:
+#       Name: ExpensiveALB
+#       Type: application
+#       Scheme: internet-facing
+#       SecurityGroups:
+#         - !Ref ExpensiveSecurityGroup
+#       Subnets:
+#         - !Ref PublicSubnet
 
-  # NAT Gateway for additional costs
-  NATGatewayEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: AttachGateway
-    Properties:
-      Domain: vpc
+#   # NAT Gateway for additional costs
+#   NATGatewayEIP:
+#     Type: AWS::EC2::EIP
+#     DependsOn: AttachGateway
+#     Properties:
+#       Domain: vpc
 
-  NATGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NATGatewayEIP.AllocationId
-      SubnetId: !Ref PublicSubnet
-      Tags:
-        - Key: Name
-          Value: ExpensiveNATGateway
+#   NATGateway:
+#     Type: AWS::EC2::NatGateway
+#     Properties:
+#       AllocationId: !GetAtt NATGatewayEIP.AllocationId
+#       SubnetId: !Ref PublicSubnet
+#       Tags:
+#         - Key: Name
+#           Value: ExpensiveNATGateway
 
-Outputs:
-  TotalEstimatedMonthlyCost:
-    Description: "Estimated monthly cost (THIS IS VERY EXPENSIVE!)"
-    Value: |
-      WARNING: This stack will incur significant charges!
-      Estimated costs per hour:
-      - x1e.xlarge: ~$3.34/hour
-      - c5n.4xlarge: ~$0.86/hour  
-      - r5.8xlarge: ~$2.02/hour
-      - EBS io2 volumes: ~$0.125/GB + $0.065/provisioned IOPS
-      - NAT Gateway: ~$0.045/hour + data processing charges
-      Total estimated: $150-300+ per day
+# Outputs:
+#   TotalEstimatedMonthlyCost:
+#     Description: 'Estimated monthly cost (THIS IS VERY EXPENSIVE!)'
+#     Value: |
+#       WARNING: This stack will incur significant charges!
+#       Estimated costs per hour:
+#       - x1e.xlarge: ~$3.34/hour
+#       - c5n.4xlarge: ~$0.86/hour
+#       - r5.8xlarge: ~$2.02/hour
+#       - EBS io2 volumes: ~$0.125/GB + $0.065/provisioned IOPS
+#       - NAT Gateway: ~$0.045/hour + data processing charges
+#       Total estimated: $150-300+ per day
 
-  Instance1PublicIP:
-    Description: Public IP of Expensive Instance 1
-    Value: !GetAtt ExpensiveInstance1.PublicIp
+#   Instance1PublicIP:
+#     Description: Public IP of Expensive Instance 1
+#     Value: !GetAtt ExpensiveInstance1.PublicIp
 
-  Instance2PublicIP:
-    Description: Public IP of Expensive Instance 2
-    Value: !GetAtt ExpensiveInstance2.PublicIp
+#   Instance2PublicIP:
+#     Description: Public IP of Expensive Instance 2
+#     Value: !GetAtt ExpensiveInstance2.PublicIp
 
-  Instance3PublicIP:
-    Description: Public IP of Expensive Instance 3
-    Value: !GetAtt ExpensiveInstance3.PublicIp
+#   Instance3PublicIP:
+#     Description: Public IP of Expensive Instance 3
+#     Value: !GetAtt ExpensiveInstance3.PublicIp
 
-  LoadBalancerDNS:
-    Description: DNS name of the load balancer
-    Value: !GetAtt ExpensiveALB.DNSName
+#   LoadBalancerDNS:
+#     Description: DNS name of the load balancer
+#     Value: !GetAtt ExpensiveALB.DNSName
 
-  WarningMessage:
-    Description: IMPORTANT WARNING
-    Value: |
-      ⚠️  WARNING: This CloudFormation stack will generate SIGNIFICANT AWS charges!
-      💰 Estimated daily cost: $150-300+
-      🔥 Remember to DELETE this stack immediately after testing!
-      📊 Monitor your AWS billing dashboard closely!
+#   WarningMessage:
+#     Description: IMPORTANT WARNING
+#     Value: |
+#       ⚠️  WARNING: This CloudFormation stack will generate SIGNIFICANT AWS charges!
+#       💰 Estimated daily cost: $150-300+
+#       🔥 Remember to DELETE this stack immediately after testing!
+#       📊 Monitor your AWS billing dashboard closely!
